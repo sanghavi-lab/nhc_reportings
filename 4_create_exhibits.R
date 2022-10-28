@@ -128,22 +128,11 @@ df.9 %>% filter(nclaims_fall!=0) %>%
   select(reporting_fall, calculate_cols, nclaims_fall, claims_based_rate_fall, reported_rate_fall) %>% 
   summarise_all(mean, na.rm=T) %>% 
   write.csv("Z:/duas/55378/Zoey/gardner/data/qm_all/initial_analysis/tables/nh_characters_by_ls_fall_reporting_20221019.csv")
-df.9 %>% filter(nclaims_pu34!=0) %>% 
+df.9 %>% filter(nclaims_pu34>2) %>% 
   group_by(short_stay, reporting_cat_pu) %>% 
   select(reporting_pu34, calculate_cols, nclaims_pu34, claims_based_rate_pu34, reported_rate_pu34) %>% 
   summarise_all(mean, na.rm=T) %>% 
-  write.csv("Z:/duas/55378/Zoey/gardner/data/qm_all/initial_analysis/tables/nh_characters_by_ls_pu_reporting_20221019.csv")
-
-df.9 %>% filter(nclaims_fall!=0) %>% filter(short_stay==0) %>% 
-  group_by(claims_rate_fall_cut) %>% 
-  select(reporting_fall, calculate_cols, nclaims_fall, claims_based_rate_fall, reported_rate_fall) %>% 
-  summarise_all(mean, na.rm=T) %>% 
-  write.csv("Z:/duas/55378/Zoey/gardner/data/qm_all/initial_analysis/tables/nh_characters_by_l_fall_claimsrate_20221019.csv")
-df.9 %>% filter(nclaims_pu34!=0) %>% filter(short_stay==0) %>% 
-  group_by(claims_rate_pu34_cut) %>% 
-  select(reporting_pu34, calculate_cols, nclaims_pu34, claims_based_rate_pu34, reported_rate_pu34) %>% 
-  summarise_all(mean, na.rm=T) %>% 
-  write.csv("Z:/duas/55378/Zoey/gardner/data/qm_all/initial_analysis/tables/nh_characters_by_l_pu_claims_20221019.csv")
+  write.csv("Z:/duas/55378/Zoey/gardner/data/qm_all/initial_analysis/tables/nh_characters_by_ls_pu_reporting_20221027.csv")
 
 df.9 %>% filter(short_stay==0) %>% 
   group_by(claims_rate_fall_cut_with0) %>% 
@@ -241,9 +230,9 @@ ggsave(filename='Z:/duas/55378/Zoey/gardner/data/qm_all/initial_analysis/plots/r
 ## caculate mds reporting rates for nursing homes by race
 mds_reporting_by_race = 
   mds_reporting %>% 
-  mutate(race = ifelse(race_name=='white', 'white', 'nonwhite')) %>% 
+  filter(race_name %in% c('white', 'black') %>% 
   filter(mds_item=='fall' | (mds_item=='pu234' & highest.stage %in% c(3, 4))) %>% 
-  group_by(MCARE_ID, short_stay, mds_item, race) %>% 
+  group_by(MCARE_ID, short_stay, mds_item, race_name) %>% 
   summarise(nreported = sum(mds_reporting),
             nclaims = n())
 ## reshape data from long to wide
@@ -251,9 +240,9 @@ mds_reporting_by_race_wide =
   mds_reporting_by_race %>% 
   pivot_wider(names_from = race, values_from = c("nclaims", "nreported")) %>% 
   mutate(nclaims_white = replace_na(nclaims_white, 0), ## replace missing with 0
-         nclaims_nonwhite = replace_na(nclaims_nonwhite, 0),
+         nclaims_black = replace_na(nclaims_black, 0),
          nreported_white = replace_na(nreported_white, 0),
-         nreported_nonwhite = replace_na(nreported_nonwhite, 0))
+         nreported_black = replace_na(nreported_black, 0))
 
 nh_variables = read.csv('Z:/duas/55378/Zoey/gardner/data/mds/nh_population/nh_variables_capser.csv')
 nh_race = nh_variables %>% group_by(MCARE_ID) %>% 
@@ -262,10 +251,9 @@ nh_race = nh_variables %>% group_by(MCARE_ID) %>%
 nh_shortlong_count = read.csv('Z:/duas/55378/Zoey/gardner/data/mds/nh_population/nh_medicare_res_count_shortlongstay_race.csv')
 ## for each nursing home, calculate the number of White and Non-White residents
 nh_sl_pop = nh_shortlong_count %>% 
-  mutate(nonwhite = medicare_count - white) %>% 
   group_by(MCARE_ID, short_stay) %>% 
   summarise(white_res_count = sum(white),
-            nonwhite_res_count = sum(nonwhite)) 
+            black_res_count = sum(black)) 
 nh_sl_race_pop = nh_sl_pop %>% inner_join(nh_race, by='MCARE_ID')
 nh_sl_race_pop = nh_sl_race_pop %>% filter(MCARE_ID!='************') %>% 
   mutate(short_stay=ifelse(short_stay=='False', 0, 1))
@@ -279,37 +267,37 @@ nh_reporting_by_race_insample = nh_reporting_by_race_wide %>% filter(MCARE_ID %i
 
 df_analysis = nh_reporting_by_race_insample %>% mutate(
   claims_rate_white = nclaims_white/white_res_count,
-  claims_rate_nonwhite = nclaims_nonwhite/nonwhite_res_count,
+  claims_rate_black = nclaims_black/black_res_count,
   reported_rate_white = nreported_white/white_res_count,
-  reported_rate_nonwhite = nreported_nonwhite/nonwhite_res_count,
+  reported_rate_black = nreported_black/black_res_count,
   reporting_white = nreported_white/nclaims_white,
-  reporting_nonwhite = nreported_nonwhite/nclaims_nonwhite
+  reporting_black = nreported_black/nclaims_black
 )
 ## select only long stay 
 df_analysis_l = df_analysis %>% filter(short_stay==0)
 ## reshape data from long to wide
 df_analysis_l_wide = 
   df_analysis_l %>% 
-  pivot_wider(names_from = mds_item, values_from = c("nclaims_white", "nclaims_nonwhite", "nreported_white", "nreported_nonwhite",
-                                                     "claims_rate_white", "claims_rate_nonwhite", "reported_rate_white", "reported_rate_nonwhite",
-                                                     "reporting_white", "reporting_nonwhite"))
+  pivot_wider(names_from = mds_item, values_from = c("nclaims_white", "nclaims_black", "nreported_white", "nreported_black",
+                                                     "claims_rate_white", "claims_rate_black", "reported_rate_white", "reported_rate_black",
+                                                     "reporting_white", "reporting_black"))
 
 
 df_analysis_l_wide = df_analysis_l_wide %>% 
-  filter(white_res_count!=0 & nonwhite_res_count!=0) %>% ##12853, exclude nursing homes with no White or Non-White population
+  filter(white_res_count!=0 & black_res_count!=0) %>% #
   mutate(
     nclaims_white_fall=replace_na(nclaims_white_fall, 0),
-    nclaims_nonwhite_fall=replace_na(nclaims_nonwhite_fall, 0),
+    nclaims_black_fall=replace_na(nclaims_black_fall, 0),
     nclaims_white_pu234=replace_na(nclaims_white_pu234, 0),
-    nclaims_nonwhite_pu234=replace_na(nclaims_nonwhite_pu234, 0),
+    nclaims_black_pu234=replace_na(nclaims_black_pu234, 0),
     claims_rate_white_fall = replace_na(claims_rate_white_fall, 0),
-    claims_rate_nonwhite_fall = replace_na(claims_rate_nonwhite_fall, 0),
+    claims_rate_black_fall = replace_na(claims_rate_black_fall, 0),
     claims_rate_white_pu234 = replace_na(claims_rate_white_pu234, 0),
-    claims_rate_nonwhite_pu234 = replace_na(claims_rate_nonwhite_pu234, 0)
+    claims_rate_black_pu234 = replace_na(claims_rate_black_pu234, 0)
   ) 
 
 ## create a subsample of nursing homes with at least 50 White and Non-White residents
-df_analysis_l_wide_noextr = df_analysis_l_wide %>% filter(white_res_count>50 & nonwhite_res_count>50)
+df_analysis_l_wide_noextr = df_analysis_l_wide %>% filter(white_res_count>50 & black_res_count>50)
 ## categorize nursing homes based on the distribution of percent of white residents
 df_analysis_l_wide_noextr$percent_white_cat = case_when(df_analysis_l_wide_noextr$white_percent>=0.82 ~ 'high',
                                                         df_analysis_l_wide_noextr$white_percent<=0.82 & df_analysis_l_wide_noextr$white_percent>=0.63 ~ 'medium',
@@ -323,22 +311,22 @@ df_analysis_l_wide$percent_white_cat = factor(df_analysis_l_wide$percent_white_c
 
 ## calculate overall fall rate
 df_analysis_l_wide = df_analysis_l_wide %>% 
-  mutate(claims_rate_fall = (nclaims_white_fall+nclaims_nonwhite_fall)/(white_res_count + nonwhite_res_count),
-         claims_rate_pu234 = (nclaims_white_pu234+nclaims_nonwhite_pu234)/(white_res_count + nonwhite_res_count),
+  mutate(claims_rate_fall = (nclaims_white_fall+nclaims_black_fall)/(white_res_count + black_res_count),
+         claims_rate_pu234 = (nclaims_white_pu234+nclaims_black_pu234)/(white_res_count + black_res_count),
   )
 df_analysis_l_wide_noextr = df_analysis_l_wide_noextr %>% 
-  mutate(claims_rate_fall = (nclaims_white_fall+nclaims_nonwhite_fall)/(white_res_count + nonwhite_res_count),
-         claims_rate_pu234 = (nclaims_white_pu234+nclaims_nonwhite_pu234)/(white_res_count + nonwhite_res_count),
+  mutate(claims_rate_fall = (nclaims_white_fall+nclaims_black_fall)/(white_res_count + black_res_count),
+         claims_rate_pu234 = (nclaims_white_pu234+nclaims_black_pu234)/(white_res_count + black_res_count),
   )
 ## calculate average, 25th and 75th percentile of hospitalization rate within each level of nursing home race mix
 df_analysis_l_wide_noextr %>% filter(!is.na(white_percent)) %>% 
-  group_by(percent_white_cat) %>% select(white_percent, claims_rate_fall,claims_rate_white_fall, claims_rate_nonwhite_fall, 
-                                         claims_rate_pu234,claims_rate_white_pu234,claims_rate_nonwhite_pu234) %>% 
+  group_by(percent_white_cat) %>% select(white_percent, claims_rate_fall,claims_rate_white_fall, claims_rate_black_fall, 
+                                         claims_rate_pu234,claims_rate_white_pu234,claims_rate_black_pu234) %>% 
   summarise_all(list(mean=mean, standard_deviation=sd, lowerCI= ~ quantile(.x, probs=0.25), upperCI= ~ quantile(.x, probs=0.75))) %>% 
   write.csv('Z:/duas/55378/Zoey/gardner/data/qm_all/initial_analysis/tables/claims_rate_fall_pu_noextreme_with0_20221019.csv')
 
 df_analysis_l_wide %>% filter(!is.na(white_percent)) %>% 
-  group_by(percent_white_cat) %>% select(white_percent,claims_rate_fall,claims_rate_white_fall, claims_rate_nonwhite_fall, 
-                                         claims_rate_pu234,claims_rate_white_pu234,claims_rate_nonwhite_pu234) %>% 
+  group_by(percent_white_cat) %>% select(white_percent,claims_rate_fall,claims_rate_white_fall, claims_rate_black_fall, 
+                                         claims_rate_pu234,claims_rate_white_pu234,claims_rate_black_pu234) %>% 
   summarise_all(list(mean=mean, standard_deviation=sd, lowerCI= ~ quantile(.x, probs=0.25), upperCI= ~ quantile(.x, probs=0.75))) %>% 
   write.csv('Z:/duas/55378/Zoey/gardner/data/qm_all/initial_analysis/tables/claims_rate_fall_pu_with0_20221019.csv')
