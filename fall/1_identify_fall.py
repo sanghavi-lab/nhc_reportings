@@ -28,18 +28,18 @@ def identify_disqualified_falls(row):
     ## or whether any diagnosis code is related to major injury
     dcode = ['ADMTG_DGNS_CD'] + ['DGNS_{}_CD'.format(i) for i in list(range(1, 26))]
     ecode = ['DGNS_E_{}_CD'.format(i) for i in list(range(1, 13))]
-    for code in dcode: ## search diagnosis code for disqualifying code or major injury code
-        if any([row[code].startswith(d) for d in icd['disqualifying_code']]):
+    for code in dcode:
+        if any([row[code].startswith(d) for d in icd_cw[icd_cw['disqualified']==1]['icd10cm']]):
             row['disqualified'] = 1
-        if any([row[code].startswith(d) for d in icd['fall_related']]):
+        if any([row[code].startswith(d) for d in icd_cw[icd_cw['major_injury']==1]['icd10cm']]):
             row['major'] = 1
     if row['disqualified'] != 1:
-        for code in ecode: ## search external diagnosis code for major injury code
-            if any([row[code].startswith(d) for d in icd['disqualifying_code']]):
+        for code in ecode:
+            if any([row[code].startswith(d) for d in icd_cw[icd_cw['disqualified']==1]['icd10cm']]):
                 row['disqualified'] = 1
     if row['major'] != 1:
-        for code in ecode: ## search external diagnosis code for  major injury code
-            if any([row[code].startswith(d) for d in icd['fall_related']]):
+        for code in ecode:
+            if any([row[code].startswith(d) for d in icd_cw[icd_cw['major_injury']==1]['icd10cm']]):
                 row['major'] = 1
     return row
 
@@ -54,6 +54,12 @@ icd = pd.read_csv('/gpfs/data/cms-share/duas/55378/Zoey/gardner/gitlab_code/nhc_
 icd = icd.astype({'disqualifying_code': 'str',
                   'ecode': 'str',
                   'fall_related': 'str'})
+## read in icd code crosswalk between icd 9 and icd 10
+icd_cw = pd.read_csv('/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/icd10cmtoicd9gem.csv')
+icd_cw = icd_cw.astype({'icd9cm': 'str',
+                        'icd10cm': 'str'})
+icd_cw['major_injury'] = icd_cw['icd9cm'].str.startswith(tuple(icd['fall_related_icd9'].tolist()))
+icd_cw['disqualified'] = icd_cw['icd9cm'].str.startswith(tuple(icd['disqualifying_icd9'].tolist()))
 
 for year in years:
     ## read in raw medpar data
