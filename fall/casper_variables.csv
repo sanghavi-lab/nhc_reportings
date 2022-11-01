@@ -1,0 +1,44 @@
+﻿Variables,Description,Rationale,PART_n
+PRVDR_NUM,,,
+CRTFCTN_DT,,,
+CMPLNC_STUS_CD,Compliance: Status,,2
+GNRL_CNTL_TYPE_CD,Ownership,,2
+CMPLNC_STUS_DESC,Compliance: Status Description,,2
+LAB_SRVC_CD,Services: Laboratory Code,,no
+LAB_SRVC_DESC,Services: Laboratory Description,Laboratory can have impact on UTI reporting,no
+CL_SRVC_CD,Services: Clinical Laboratory Code,,no
+CL_SRVC_DESC,Services: Clinical Laboratory Description,,no
+PHYSN_EMPLEE_SW,Services: Physician - Employee Indicator,,no
+PHYSN_ARNGMT_SW,Services: Physician - Under Arrangement Indicator,,no
+PHYSN_CNTRCTR_SW,Services: Physician - Independent Contractor Indicator,,no
+MLT_FAC_MNGD_IND,Multiple Facility Managed Indicator,,no
+MLT_FAC_OWND_IND,Multiple Facility Owned Indicator,,no
+MLT_FAC_ORG_NAME, Multiple Facility Organization Name,,2
+MLT_OWND_FAC_ORG_SW,Multiple Facility Organization Owned Indicator,,2
+PHYSN_SRVC_CD,Services: Physician Code,,no
+PHYSN_SRVC_DESC,Services: Physician Description,,no
+PHYSN_CNT,Staff Count: Physician - Employee,,no
+PHYSN_VLNTR_CNT,Staff Count: Physician - Volunteer,,no
+CRTFD_BED_CNT,Bed Count: Certified,,2
+BED_CNT,Bed Count: Total,,2
+RSDNT_PHYSN_CNT,Staff Count: Physician Resident,,no
+PHYSN_ASTNT_CNT,Staff Count: Physician Assistant,,no
+DCTD_ER_SRVC_CD,Services: Emergency Department Code,,no
+DCTD_ER_SRVC_DESC,Services: Emergency Department Description,,no
+CNSUS_RSDNT_CNT,,,2
+CNSUS_AGE_OVR_65_CNT,,,no
+CNSUS_ABUSE_INVSTGTN_CNT,Abuse Allegations Investigated Count,,no
+CNSUS_NGLCT_INVSTGTN_CNT,Neglect Allegations Investigated Count,,no
+PHYSN_SRVC_ONST_RSDNT_SW,Services: Physician On-Site Residents Indicator,,2
+PHYSN_SRVC_OFSITE_RSDNT_SW,Services: Physician Off-Site Residents Indicator,,2
+PHYSN_OTHR_CNTRCT_CNT,Staff Count: Other Physician - Contract,,2
+PHYSN_OTHR_FLTM_CNT,Staff Count: Other Physician - Full-time ,,2
+PHYSN_OTHR_PRTM_CNT,Staff Count: Other Physician - Part-time,,2
+CL_SRVC_ONST_RSDNT_SW,Services: Clinical Laboratory - On-Site Residents Indicator,,2
+CL_SRVC_ONST_NRSDNT_SW,Services: Clinical Laboratory - On-Site NonResidents Indicator,,2
+CL_SRVC_OFSITE_RSDNT_SW,Services: Clinical Laboratory - Off-Site Residents Indicator,,2
+DFCNCY_CMPLTN_DT,Citation Completion Date,,no
+SCOPE_SVRTY_CD,Citation Severity Code,D - F minimal harm; G - I: actual harm; J - L: immediate jeopardy,4 or 7
+DFCNCY_TAG_NUM,,,4 or 7
+DFCNCY_TAG_DESC,,,4 or 7
+DFCNCY_CRCTN_DT,Citation Correction Date,,no
