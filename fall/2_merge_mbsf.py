@@ -14,7 +14,7 @@ client = Client("10.50.86.251:52781")
 
 mbsfPath = '/gpfs/data/cms-share/data/medicare/{}/mbsf/mbsf_abcd/parquet/'
 inputPath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/medpar/falls/'
-writePath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/medpar/falls/MBSF/'
+writePath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/medpar/falls/MBSF_new/'
 
 years = [2016, 2017]
 
@@ -40,7 +40,7 @@ for year in years:
                                       'SEX_IDENT_CD': 'sex'})
 
     ## read in falls claims
-    falls = dd.read_parquet(inputPath + 'qualified_falls{}_new'.format(year))
+    falls = dd.read_parquet(inputPath + 'qualified_falls{}_new3'.format(year))
     ## merge in MBSF columns and subset to only fee-for-service benes
     falls = falls.merge(df_MBSF, on='BENE_ID', how='inner')
 
