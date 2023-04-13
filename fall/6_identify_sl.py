@@ -32,8 +32,8 @@ def identify_sl_residents(analysisDF, mds, output_path=None):
     analysisDF.to_parquet(output_path)
 
 mdsPath = '/gpfs/data/cms-share/data/mds/year/{}/xwalk/parquet/'
-inputPath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/medpar_mds/CDISCHRG_SAMENH/'
-writePath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/medpar_mds/CDISCHRG_SL/'
+inputPath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/medpar_mds/CDISCHRG_SAMENH_new/'
+writePath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/medpar_mds/CDISCHRG_SL_new/'
 testPath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/test/'
 
 years = [2016, 2017]
