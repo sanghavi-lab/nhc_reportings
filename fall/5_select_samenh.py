@@ -13,8 +13,8 @@ from dask.distributed import Client
 client = Client("10.50.86.251:52781")
 
 mdsPath = '/gpfs/data/cms-share/data/mds/year/{}/xwalk/parquet/'
-inputPath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/medpar_mds/CDISCHRG/'
-writePath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/medpar_mds/CDISCHRG_SAMENH/'
+inputPath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/medpar_mds/CDISCHRG_new/'
+writePath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/medpar_mds/CDISCHRG_SAMENH_new/'
 testPath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/test/'
 
 years = [2016, 2017]
