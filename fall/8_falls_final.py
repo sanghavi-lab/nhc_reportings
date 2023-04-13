@@ -11,7 +11,7 @@ pd.set_option('display.max_columns', 500)
 from dask.distributed import Client
 client = Client("10.50.86.250:53579")
 
-inputPath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/medpar_mds/CDISCHRG_FAC/'
+inputPath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/medpar_mds/CDISCHRG_FAC_new/'
 writePath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/medpar_mds/'
 testPath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/merge_output/fall/test/'
 ## read in the sample data from last step
@@ -69,7 +69,7 @@ df_final = df[use_cols + fall_cols]
 df_final = df_final.dropna()
 
 df_final.compute().to_csv(
-    writePath + 'falls_final_data1617_new.csv'
+    writePath + 'falls_final_data1617_final.csv'
 )
 
 
