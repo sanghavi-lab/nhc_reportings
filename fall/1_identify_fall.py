@@ -53,7 +53,9 @@ testPath = '/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/medpar/falls/test/
 icd = pd.read_csv('/gpfs/data/cms-share/duas/55378/Zoey/gardner/gitlab_code/nhc_qm/falls/falls_icd.csv')
 icd = icd.astype({'disqualifying_code': 'str',
                   'ecode': 'str',
-                  'fall_related': 'str'})
+                  'fall_related': 'str',
+                  'fall_related_icd9': 'str',
+                  'disqualifying_icd9': 'str'})
 ## read in icd code crosswalk between icd 9 and icd 10
 icd_cw = pd.read_csv('/gpfs/data/cms-share/duas/55378/Zoey/gardner/data/icd10cmtoicd9gem.csv')
 icd_cw = icd_cw.astype({'icd9cm': 'str',
@@ -87,19 +89,16 @@ for year in years:
     ## write fall related claims to file
     falls = hospital[hospital['falls']==1]
     falls.to_parquet(
-        writePath + 'falls{}'.format(year)
+        writePath + 'falls{}_new'.format(year)
     )
 
 for year in years:
-    df = dd.read_parquet(writePath + 'falls{}'.format(year))
+    df = dd.read_parquet(writePath + 'falls{}_new'.format(year))
 
     df = df.map_partitions(lambda ddf: ddf.apply(identify_disqualified_falls, axis=1))
     falls_qualified = df[df['disqualified']==0]
-    ## write fall-related claims without disqualifying code to file
-    falls_qualified.to_parquet(writePath + 'qualified_falls{}_new'.format(year))
 
-
-
+    falls_qualified.to_parquet(writePath + 'qualified_falls{}_new3'.format(year))
 
 
 
